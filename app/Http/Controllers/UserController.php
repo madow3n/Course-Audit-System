@@ -23,6 +23,10 @@ class UserController extends Controller
 
     public function promote()
     {
+        User::where('year_level', 'Junior')
+            ->update([
+                'year_level' => 'Senior'
+            ]);
         User::where('year_level', 'Sophomore')
             ->update([
                 'year_level' => 'Junior'
@@ -31,10 +35,7 @@ class UserController extends Controller
             ->update([
                 'year_level' => 'Sophomore'
             ]);
-        User::where('year_level', 'Junior')
-            ->update([
-                'year_level' => 'Senior'
-            ]);
+
         return redirect('/admin/users');
     }
 
