@@ -14,7 +14,7 @@
                 <input required type="email" name="email" id="email" value="{{ $users->email }}"
                     class="form-control"></br>
                 <label>Password</label><br />
-                <input required type="password" name="password" id="password" value="" class="form-control"></br>
+                <input type="password" name="password" id="password" value="" class="form-control"></br>
 
                 <p>{{ $users->year_level }}</p>
                 <select required name="year_level" id="year_level" aria-label="Default select example">

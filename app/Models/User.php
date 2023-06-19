@@ -130,6 +130,9 @@ class User extends Authenticatable
     public function getUserCourseRequirements()
     {
         $studyPlan = $this->getStudyPlan();
+
+        if (!$studyPlan) return collect();
+
         $courseTypes = $studyPlan->types;
         $courses = $studyPlan->courses()->with('types')->get();
         $reqs = collect();
@@ -195,6 +198,9 @@ class User extends Authenticatable
     public function getFailedCourses()
     {
         $studyPlan = $this->getStudyPlan();
+
+        if (!$studyPlan) return collect();
+
         $courses = $studyPlan->courses()->with('types')->get();
         $failed = collect();
         $count = 0;

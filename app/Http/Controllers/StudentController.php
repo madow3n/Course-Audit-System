@@ -16,7 +16,8 @@ class StudentController extends Controller
         /** @var \App\Models\User */
         $user = auth()->user();
         $studyplan = $user->getStudyPlan();
-        $courseGroups = $studyplan->courses->groupBy('pivot.semester');
+
+        $courseGroups = $studyplan?->courses->groupBy('pivot.semester') ?? collect();
         return view('student.index', [
             'semester' => $semester,
             'user' => $user,
@@ -28,12 +29,15 @@ class StudentController extends Controller
     public function dashboard()
     {
         $semester = [1, 2, 3, 4, 5, 6, 7, 8];
+        /**@var \App\Models\User  */
+        $user = auth()->user();
+        $studyplan = $user->getStudyPlan();
         /** @var \App\Models\User */
         $user = auth()->user();
         return view('student.dashboard', [
             'semester' => $semester,
             'user' => $user,
-
+            'studyplan' => $studyplan
         ]);
     }
 

@@ -115,7 +115,7 @@ class UserController extends Controller
     {
         $users = User::find($id);
         $input = $request->all();
-        $input['password'] = Hash::make($input['password']);
+        $input['password'] = isset($input['password']) ? Hash::make($input['password']) : $users->password;
         $users->update($input);
         return redirect('/admin/users')->with('flash_message', 'Updated');
     }
