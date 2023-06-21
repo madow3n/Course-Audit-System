@@ -1,8 +1,8 @@
 @extends('layouts.student')
 @section('content')
-    <div class="container">
+    <div class="container" style="width:fit-content">
         <div class="row" style="margin:20px;">
-            <div class="col-12">
+            <div class="col-md-12">
                 <div class="card border border-0">
                     <div class="card-header">
                         <h2>Welcome {{ $user->name }}</h2>
@@ -11,7 +11,7 @@
                         <p>No Study Plan Assigned</p>
                     @endif
                     @if ($studyplan)
-                        <div class="card-header">
+                        <div class="card-header" style="width:fit-content">
                             @php
                                 $reqs = $user->getUserCourseRequirements();
                             @endphp

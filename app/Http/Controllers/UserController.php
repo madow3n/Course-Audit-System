@@ -44,7 +44,7 @@ class UserController extends Controller
         $semester = [1, 2, 3, 4, 5, 6, 7, 8];
         $user = User::with('courses')->find($id);
         $studyplan = $user->getStudyPlan();
-        $courseGroups = $studyplan->courses->groupBy('pivot.semester');
+        $courseGroups = $studyplan?->courses->groupBy('pivot.semester') ?? collect();
         return view('users.view', [
             'semester' => $semester,
             'user' => $user,

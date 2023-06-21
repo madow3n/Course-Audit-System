@@ -8,75 +8,80 @@
                         <h2>View {{ $user->name }}</h2>
                     </div>
                     <br />
-                    @foreach ($semester as $sem)
-                        <h5>Semester {{ $sem }}</h5>
+                    @if (!$studyplan)
+                        <p> no plan assigned</p>
+                    @endif
+
+                    @if ($studyplan)
+                        @foreach ($semester as $sem)
+                            <h5>Semester {{ $sem }}</h5>
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Code</th>
+                                        <th>Course Name</th>
+                                        <th>Credit</th>
+                                        <th>Type(s)</th>
+                                        <th>Grades</th>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($courseGroups[$sem] ?? [] as $course)
+                                        <tr>
+                                            <td style="width: 50px">{{ $course->code_name }}</td>
+                                            <td style="width: 140px">{{ $course->name }}</td>
+                                            <td style="width: 30px">{{ $course->credit }}</td>
+                                            <td style="width: 120px">
+                                                @foreach ($course->types as $type)
+                                                    {{ $type->name }}
+                                                    @if (!$loop->last)
+                                                        /
+                                                    @endif
+                                                @endforeach
+                                            </td style="width: 100px">
+                                            @php
+                                                $userGrade = $user->courses->where('id', $course->id)->first()?->grades;
+                                                
+                                            @endphp
+
+                                            <td style="width: 100px">{{ $userGrade?->letter_grade }}</td>
+                                        </tr>
+                                    @endforeach
+
+                            </table>
+                            <br />
+                        @endforeach
+                        @php
+                            $reqs = $user->getUserCourseRequirements();
+                        @endphp
                         <table class="table">
-                            <thead>
+                            <thead class="thead-light">
                                 <tr>
-                                    <th>Code</th>
-                                    <th>Course Name</th>
-                                    <th>Credit</th>
-                                    <th>Type(s)</th>
-                                    <th>Grades</th>
-                                    </th>
+                                    <th></th>
+                                    <th>Minimum Requirements</th>
+                                    <th>Completed</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach ($courseGroups[$sem] ?? [] as $course)
+                                @foreach ($reqs as $req)
                                     <tr>
-                                        <td style="width: 50px">{{ $course->code_name }}</td>
-                                        <td style="width: 140px">{{ $course->name }}</td>
-                                        <td style="width: 30px">{{ $course->credit }}</td>
-                                        <td style="width: 120px">
-                                            @foreach ($course->types as $type)
-                                                {{ $type->name }}
-                                                @if (!$loop->last)
-                                                    /
-                                                @endif
-                                            @endforeach
-                                        </td style="width: 100px">
-                                        @php
-                                            $userGrade = $user->courses->where('id', $course->id)->first()?->grades;
-                                            
-                                        @endphp
-
-                                        <td style="width: 100px">{{ $userGrade?->letter_grade }}</td>
+                                        <td>{{ $req->type->name }}</td>
+                                        <td>{{ $req->min_course }}</td>
+                                        <td>{{ $req->num_of_courses_fulfilled }}</td>
                                     </tr>
                                 @endforeach
-
-                        </table>
-                        <br />
-                    @endforeach
-                    @php
-                        $reqs = $user->getUserCourseRequirements();
-                    @endphp
-                    <table class="table">
-                        <thead class="thead-light">
-                            <tr>
-                                <th></th>
-                                <th>Minimum Requirements</th>
-                                <th>Completed</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($reqs as $req)
                                 <tr>
-                                    <td>{{ $req->type->name }}</td>
-                                    <td>{{ $req->min_course }}</td>
-                                    <td>{{ $req->num_of_courses_fulfilled }}</td>
+                                    <td><b>Credits:</b></td>
+                                    <td><b>132 </b></td>
+                                    <td><b>{{ $user->getUserCredit() }}</b></td>
                                 </tr>
-                            @endforeach
-                            <tr>
-                                <td><b>Credits:</b></td>
-                                <td><b>132 </b></td>
-                                <td><b>{{ $user->getUserCredit() }}</b></td>
-                            </tr>
-                            <tr>
-                                <td><b>CGPA</b></td>
-                                <td><b>2.0</b></td>
-                                <td><b>{{ $user->getCGPA() }}</b></td>
-                            </tr>
-                    </table>
+                                <tr>
+                                    <td><b>CGPA</b></td>
+                                    <td><b>2.0</b></td>
+                                    <td><b>{{ $user->getCGPA() }}</b></td>
+                                </tr>
+                        </table>
                 </div><br />
                 <h6>Note: Core, Math, F-MathSciTech, and F-Core courses will be marked as incomplete and needs to be retaken
                     to complete if the grade is DD or F.</h6><br />
@@ -104,6 +109,7 @@
                             </td>
                     @endforeach
                     </tr>
+                    @endif
             </div>
         </div>
     </div>

@@ -1,6 +1,6 @@
 @extends('layouts.student')
 @section('content')
-    <div class="container">
+    <div class="container" style="width: fit-content">
         <div class="row" style="margin:20px;">
             <div class="col-12">
                 <div class="card border border-0">
