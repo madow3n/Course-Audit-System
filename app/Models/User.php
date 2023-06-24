@@ -77,7 +77,7 @@ class User extends Authenticatable
     public function courses()
     {
         return $this->belongsToMany(Course::class, 'user_grades', 'user_id', 'course_id')
-            ->withPivot(['grades'])
+            ->withPivot(['grades', 'semester'])
             ->using(UserGrade::class)
             ->as('grades');
     }

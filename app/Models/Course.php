@@ -32,7 +32,7 @@ class Course extends Model
     public function users()
     {
         return $this->belongsToMany(User::class, 'user_grades', 'course_id', 'user_id')
-            ->withPivot(['grades'])
+            ->withPivot(['grades', 'semester'])
             ->using(UserGrade::class)
             ->as('grades');
     }

@@ -13,11 +13,25 @@ class StudentController extends Controller
     {
 
         $semester = [1, 2, 3, 4, 5, 6, 7, 8];
+
         /** @var \App\Models\User */
         $user = auth()->user();
         $studyplan = $user->getStudyPlan();
 
-        $courseGroups = $studyplan?->courses->groupBy('pivot.semester') ?? collect();
+        $courses = $studyplan
+            ?->courses()
+            ->whereHas(
+                'users',
+                fn ($q) => $q->where('users.id', $user->id)
+            )
+            ->get() ?? collect();
+
+        $courses->push(
+            ...$studyplan?->courses()->whereNotIn('courses.id', $courses->pluck('id'))->get() ?? collect()
+        );
+
+        $courseGroups = $courses->groupBy('pivot.semester') ?? collect();
+
         return view('student.index', [
             'semester' => $semester,
             'user' => $user,
@@ -46,22 +60,25 @@ class StudentController extends Controller
         $input = $request->all();
         $user = auth()->user();
 
-        foreach ($input['course_grade'] as $courseId => $gradeNum) {
-            if (!$gradeNum) {
-                UserGrade::where('user_id', $user->id)->where('course_id', $courseId)->delete();
-            } else {
-
-
-
-                UserGrade::updateOrCreate(
-                    [
-                        'user_id' => $user->id,
-                        'course_id' => $courseId,
-                    ],
-                    [
-                        'grades' => $gradeNum
-                    ]
-                );
+        foreach ($input['course_grade'] as $sem => $courseGrade) {
+            foreach ($courseGrade as $courseId => $gradeNum) {
+                if (!$gradeNum) {
+                    UserGrade::where('user_id', $user->id)
+                        ->where('course_id', $courseId)
+                        ->where('semester', $sem)
+                        ->delete();
+                } else {
+                    UserGrade::updateOrCreate(
+                        [
+                            'user_id' => $user->id,
+                            'course_id' => $courseId,
+                        ],
+                        [
+                            'semester' => $sem,
+                            'grades' => $gradeNum,
+                        ]
+                    );
+                }
             }
         }
         activity('ChangeGrade')->log($user->name . ' changed their grades');

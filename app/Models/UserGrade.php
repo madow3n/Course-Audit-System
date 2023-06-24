@@ -17,6 +17,7 @@ class UserGrade extends Pivot
         'user_id',
         'course_id',
         'grades',
+        'semester'
     ];
 
     public function user()

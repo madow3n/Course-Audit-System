@@ -31,46 +31,89 @@
                                     </thead>
                                     <tbody>
                                         @foreach ($courseGroups[$sem] ?? [] as $course)
-                                            <tr>
-                                                <td style="width: 50px">{{ $course->code_name }}</td>
-                                                <td style="width: 140px">{{ $course->name }}</td>
-                                                <td style="width: 30px">{{ $course->credit }}</td>
-                                                <td style="width: 120px">
-                                                    <p>
-                                                        @foreach ($course->types as $type)
-                                                            {{ $type->name }}
-                                                            @if (!$loop->last)
-                                                                /
-                                                            @endif
-                                                        @endforeach
-                                                    </p>
-                                                </td>
-                                                @php
-                                                    $userGrade = $user->courses->where('id', $course->id)->first()?->grades;
-                                                    
+                                            @php
+                                                $shouldRender = true;
+                                                foreach ($semester as $s) {
+                                                    if ($s !== $sem) {
+                                                        $_courses = $courseGroups[$s];
+                                                
+                                                        foreach ($_courses as $_course) {
+                                                            if ($course->id != $_course->id) {
+                                                                continue;
+                                                            }
+                                                
+                                                            $_userGrade = $user
+                                                                ->courses()
+                                                                ->wherePivot('semester', $s)
+                                                                ->where('courses.id', $_course->id)
+                                                                ->first()?->grades;
+                                                
+                                                            if ($_userGrade) {
+                                                                // semster pseng mean grade
+                                                
+                                                                $shouldRender = false;
+                                                
+                                                                break;
+                                                            }
+                                                        }
+                                                
+                                                        if (!$shouldRender) {
+                                                            break;
+                                                        }
+                                                    }
+                                                }
+                                                
+                                                if ($shouldRender) {
+                                                    $userGrade = $user
+                                                        ->courses()
+                                                        ->wherePivot('semester', $sem)
+                                                        ->where('courses.id', $course->id)
+                                                        ->first()?->grades;
+                                                
                                                     $canEditGrade = ($user->year_level == 'Freshman' && ($sem == 1 || $sem == 2)) || ($user->year_level == 'Sophomore' && ($sem == 1 || $sem == 2 || $sem == 3 || $sem == 4)) || ($user->year_level == 'Junior' && ($sem == 1 || $sem == 2 || $sem == 3 || $sem == 4 || $sem == 5 || $sem == 6)) || ($user->year_level == 'Senior' && ($sem == 1 || $sem == 2 || $sem == 3 || $sem == 4 || $sem == 5 || $sem == 6 || $sem == 7 || $sem == 8));
-                                                @endphp
+                                                }
+                                                
+                                            @endphp
 
-                                                @if ($canEditGrade)
-                                                    <td style="width: 100px">
-                                                        <select name="course_grade[{{ $course->id }}]" id="gradefill"
-                                                            aria-label="Default select example">
-
-                                                            <option {{ $userGrade ? '' : 'selected' }} value="">Grade
-                                                            </option>
-
-                                                            @foreach ($gradefill as $gradeNum => $letterGrade)
-                                                                <option
-                                                                    {{ $userGrade?->letter_grade === $letterGrade ? 'selected' : '' }}
-                                                                    value="{{ $gradeNum }}">{{ $letterGrade }}
-                                                                </option>
+                                            @if ($shouldRender)
+                                                <tr>
+                                                    <td style="width: 50px">{{ $course->code_name }}</td>
+                                                    <td style="width: 140px">{{ $course->name }}</td>
+                                                    <td style="width: 30px">{{ $course->credit }}</td>
+                                                    <td style="width: 120px">
+                                                        <p>
+                                                            @foreach ($course->types as $type)
+                                                                {{ $type->name }}
+                                                                @if (!$loop->last)
+                                                                    /
+                                                                @endif
                                                             @endforeach
-                                                        </select>
+                                                        </p>
                                                     </td>
-                                                @else
-                                                    <td style="width: 100px">-</td>
-                                                @endif
-                                            </tr>
+
+                                                    @if ($canEditGrade)
+                                                        <td style="width: 100px">
+                                                            <select
+                                                                name="course_grade[{{ $sem }}][{{ $course->id }}]"
+                                                                id="gradefill" aria-label="Default select example">
+
+                                                                <option {{ $userGrade ? '' : 'selected' }} value="">
+                                                                    Grade
+                                                                </option>
+
+                                                                @foreach ($gradefill as $gradeNum => $letterGrade)
+                                                                    <option
+                                                                        {{ $userGrade?->letter_grade === $letterGrade ? 'selected' : '' }}
+                                                                        value="{{ $gradeNum }}">{{ $letterGrade }}
+                                                                    </option>
+                                                                @endforeach
+                                                            </select>
+                                                        </td>
+                                                    @else
+                                                        <td style="width: 100px">-</td>
+                                                    @endif
+                                                </tr>
+                                            @endif
                                         @endforeach
 
                                 </table>

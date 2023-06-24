@@ -107,6 +107,11 @@ class StudyplansController extends Controller
             ->whereDoesntHave('studyplan', function ($query) use ($studyplan) {
                 return $query->where('studyplans.id', $studyplan->id);
             })
+            ->orWhereHas('types', function ($query) {
+                $types = ['DE', 'GE'];
+
+                return $query->whereIn('types.name', $types);
+            })
             ->get();
 
         return view('studyplans.list', [
