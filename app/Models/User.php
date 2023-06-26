@@ -92,7 +92,8 @@ class User extends Authenticatable
 
         $courses = $studyPlan->courses()
             ->wherePivot('semester', '<=', $currentSemester)
-            ->get();
+            ->get()
+            ->unique('id');
 
         // get gpa of courses
         // cgpa =[Course1(gradeNum*Credit) + Course2(gradeNum*Credit)]/ course1credit + course2credit
@@ -101,11 +102,15 @@ class User extends Authenticatable
         $numerator = 0;
         $denominator = 0;
         foreach ($courses as $course) {
-            $numerator += $course->credit * ($this->getCourseGrade($course)?->grades ?? 0);
-            $denominator += $course->credit;
+            if ($this->getCourseGrade($course) != null) {
+                $numerator += $course->credit * ($this->getCourseGrade($course)?->grades ?? 0);
+                $denominator += $course->credit;
+            }
         }
-
-        return +number_format($numerator / $denominator, 2);
+        if ($denominator != 0)
+            return +number_format($numerator / $denominator, 2);
+        else
+            return 0;
     }
 
     public function getCourseGrade(Course $course): ?UserGrade
@@ -134,7 +139,7 @@ class User extends Authenticatable
         if (!$studyPlan) return collect();
 
         $courseTypes = $studyPlan->types;
-        $courses = $studyPlan->courses()->with('types')->get();
+        $courses = $studyPlan->courses()->with('types')->get()->unique('id');
         $reqs = collect();
 
         foreach ($courseTypes as &$type) {
@@ -185,7 +190,8 @@ class User extends Authenticatable
 
         $courses = $studyPlan->courses()
             ->wherePivot('semester', '<=', $currentSemester)
-            ->get();
+            ->get()
+            ->unique('id');
         $credit = 0;
         foreach ($courses as $course) {
             $grade = $this->getCourseGrade($course);
@@ -201,7 +207,7 @@ class User extends Authenticatable
 
         if (!$studyPlan) return collect();
 
-        $courses = $studyPlan->courses()->with('types')->get();
+        $courses = $studyPlan->courses()->with('types')->get()->unique('id');
         $failed = collect();
         $count = 0;
         foreach ($courses as $course) {

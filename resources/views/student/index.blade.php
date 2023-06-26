@@ -30,12 +30,14 @@
                                         </tr>
                                     </thead>
                                     <tbody>
+
                                         @foreach ($courseGroups[$sem] ?? [] as $course)
                                             @php
                                                 $shouldRender = true;
+                                                
                                                 foreach ($semester as $s) {
                                                     if ($s !== $sem) {
-                                                        $_courses = $courseGroups[$s];
+                                                        $_courses = $courseGroups[$s] ?? [];
                                                 
                                                         foreach ($_courses as $_course) {
                                                             if ($course->id != $_course->id) {
@@ -74,47 +76,51 @@
                                                 }
                                                 
                                             @endphp
-
-                                            @if ($shouldRender)
-                                                <tr>
-                                                    <td style="width: 50px">{{ $course->code_name }}</td>
-                                                    <td style="width: 140px">{{ $course->name }}</td>
-                                                    <td style="width: 30px">{{ $course->credit }}</td>
-                                                    <td style="width: 120px">
-                                                        <p>
-                                                            @foreach ($course->types as $type)
-                                                                {{ $type->name }}
-                                                                @if (!$loop->last)
-                                                                    /
-                                                                @endif
-                                                            @endforeach
-                                                        </p>
-                                                    </td>
-
-                                                    @if ($canEditGrade)
-                                                        <td style="width: 100px">
-                                                            <select
-                                                                name="course_grade[{{ $sem }}][{{ $course->id }}]"
-                                                                id="gradefill" aria-label="Default select example">
-
-                                                                <option {{ $userGrade ? '' : 'selected' }} value="">
-                                                                    Grade
-                                                                </option>
-
-                                                                @foreach ($gradefill as $gradeNum => $letterGrade)
-                                                                    <option
-                                                                        {{ $userGrade?->letter_grade === $letterGrade ? 'selected' : '' }}
-                                                                        value="{{ $gradeNum }}">{{ $letterGrade }}
-                                                                    </option>
+                                            @if ($course)
+                                                @if ($shouldRender)
+                                                    <tr>
+                                                        <td style="width: 50px">{{ $course->code_name }}</td>
+                                                        <td style="width: 140px">{{ $course->name }}</td>
+                                                        <td style="width: 30px">{{ $course->credit }}</td>
+                                                        <td style="width: 120px">
+                                                            <p>
+                                                                @foreach ($course->types as $type)
+                                                                    {{ $type->name }}
+                                                                    @if (!$loop->last)
+                                                                        /
+                                                                    @endif
                                                                 @endforeach
-                                                            </select>
+                                                            </p>
                                                         </td>
-                                                    @else
-                                                        <td style="width: 100px">-</td>
-                                                    @endif
-                                                </tr>
+
+                                                        @if ($canEditGrade)
+                                                            <td style="width: 100px">
+                                                                <select
+                                                                    name="course_grade[{{ $sem }}][{{ $course->id }}]"
+                                                                    id="gradefill" aria-label="Default select example">
+
+                                                                    <option {{ $userGrade ? '' : 'selected' }}
+                                                                        value="">
+                                                                        Grade
+                                                                    </option>
+
+                                                                    @foreach ($gradefill as $gradeNum => $letterGrade)
+                                                                        <option
+                                                                            {{ $userGrade?->letter_grade === $letterGrade ? 'selected' : '' }}
+                                                                            value="{{ $gradeNum }}">
+                                                                            {{ $letterGrade }}
+                                                                        </option>
+                                                                    @endforeach
+                                                                </select>
+                                                            </td>
+                                                        @else
+                                                            <td style="width: 100px">-</td>
+                                                        @endif
+                                                    </tr>
+                                                @endif
                                             @endif
                                         @endforeach
+
 
                                 </table>
                                 <br />
