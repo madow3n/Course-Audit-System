@@ -20,7 +20,9 @@ class StudyplansController extends Controller
      */
     public function index()
     {
-        $studyplans = studyplans::all();
+        $studyplans = studyplans::searchable([
+            'name'
+        ])->get();
         return view('studyplans.index')->with('studyplans', $studyplans);
     }
     public function assignGet(studyplans $studyplan)
@@ -68,7 +70,7 @@ class StudyplansController extends Controller
     public function assignStudentGet(studyplans $studyplan)
     {
         return view('studyplans.assignStudent', [
-            'students' => User::whereNull('role')->whereNull('custom_studyplan_id')->get(),
+            'students' => User::whereNull('role')->whereNull('custom_studyplan_id')->searchable(['name'])->get(),
             'studyplan' => $studyplan,
         ]);
     }
@@ -111,7 +113,7 @@ class StudyplansController extends Controller
                 $types = ['DE', 'GE'];
 
                 return $query->whereIn('types.name', $types);
-            })
+            })->searchable(['name', 'code_name', 'types.name'])
             ->get();
 
         return view('studyplans.list', [

@@ -2,12 +2,13 @@
 
 namespace App\Models;
 
+use App\Support\Searchable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class studyplans extends Model
 {
-    use HasFactory;
+    use HasFactory, Searchable;
     /**
      * Assignable
      * @var array

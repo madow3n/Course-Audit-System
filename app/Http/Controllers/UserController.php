@@ -6,6 +6,7 @@ use App\Models\AcademicYear;
 use App\Models\Course;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
@@ -17,26 +18,46 @@ class UserController extends Controller
      */
     public function index()
     {
-        $users = User::whereNull('role')->get();
+        $users = User::searchable([
+            'name', 'year_level'
+        ])->whereNull('role')->get();
         return view('users.index')->with('users', $users);
     }
 
-    public function promote()
+    public function promoteGet()
     {
-        User::where('year_level', 'Junior')
-            ->update([
-                'year_level' => 'Senior'
-            ]);
-        User::where('year_level', 'Sophomore')
-            ->update([
-                'year_level' => 'Junior'
-            ]);
-        User::where('year_level', 'Freshman')
-            ->update([
-                'year_level' => 'Sophomore'
-            ]);
+        $users = User::whereNull('role')->whereNot('year_level', 'Senior')->get();
+        return view('users.promote')->with('users', $users);
+    }
 
-        return redirect('/admin/users');
+    public function promote(Request $request)
+    {
+        $input = $request->all();
+        $request->validate([
+            'students' => ['required', 'array', 'min:1']
+        ]);
+
+        return DB::transaction(function () use ($input) {
+            foreach ($input['students'] as $studentID) {
+                $user = User::findOrFail($studentID);
+
+                $nextLevel = match ($user->year_level) {
+                    'Freshman' => 'Sophomore',
+                    'Sophomore' => 'Junior',
+                    'Junior' => 'Senior',
+                    'Senior' => null,
+                    default => null,
+                };
+
+                if ($nextLevel) {
+                    $user->update([
+                        'year_level' => $nextLevel
+                    ]);
+                }
+            }
+
+            return redirect('/admin/users');
+        });
     }
 
     public function view($id)

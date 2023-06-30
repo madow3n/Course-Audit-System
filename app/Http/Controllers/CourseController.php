@@ -15,7 +15,9 @@ class CourseController extends Controller
      */
     public function index()
     {
-        $courses = Course::with('types')->get();
+        $courses = Course::with('types')->searchable([
+            'name', 'code_name', 'types.name'
+        ])->get();
         return view('courses.index', [
             'courses' => $courses,
         ]);

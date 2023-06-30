@@ -7,6 +7,7 @@ use App\Http\Controllers\StudentController;
 use App\Http\Controllers\StudyplansController;
 use App\Http\Controllers\UserController;
 use App\Models\AcademicYear;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -48,8 +49,9 @@ Route::get('/home', function () {
 Route::prefix('admin')
     ->middleware(['auth', 'admin'])
     ->group(function () {
-        Route::resource('/users', UserController::class);
+        Route::get('/users/promote', [UserController::class, 'promoteGet']);
         Route::post('/users/promote', [UserController::class, 'promote']);
+        Route::resource('/users', UserController::class);
         Route::resource('/courses', CourseController::class);
         Route::resource('/studyplans', StudyplansController::class);
         Route::get('/studyplans/{studyplan}/assign', [StudyplansController::class, 'assignGet']);
@@ -66,6 +68,7 @@ Route::prefix('admin')
         Route::delete('/studyplans/{studyplan}/courses/{course}', [StudyplansController::class, 'courseRemove']);
         Route::get('/logs', [LogController::class, 'index']);
         Route::get('/users/{user}/view', [UserController::class, 'view']);
+        //Route::post('/users/promote', [UserController::class, 'promote']);
     });
 Route::prefix('student')
     ->middleware('auth')

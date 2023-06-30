@@ -5,14 +5,14 @@
             <div class="col-12">
                 <div class="card">
                     <div class="card-header">
-                        <h2>Courses</h2>
+                        <h2>Promote Students</h2>
                     </div>
-                    @error('courses')
-                        <small> please select a course</small>
+                    @error('students')
+                        <small> please select student(s)</small>
                     @enderror
                     <br />
-
-                    <form action='{{ url('/admin/studyplans/' . $studyplans->id . '/view/list') }}'>
+                    <form action='{{ url('/admin/users/promote') }}'>
+                        @csrf
                         <div class="input-group mb-3" style="padding-left: 10px; width: 50%;">
                             <div class="input-group-prepend">
                                 <span class="input-group-text" id="basic-addon1">
@@ -27,60 +27,42 @@
                             <button type="submit" class="btn btn-light">Search</button>
                         </div>
                     </form>
-                    <form action="{{ url('/admin/studyplans/' . $studyplans->id . '/view/list') }}" method="POST">
+                    <form action="{{ url('admin/users/promote') }}" method="POST">
                         @csrf
-                        <p>Add to Semester
-                            <select name="semester" required id="semester" aria-label="Default select example">
-                                <option value="" selected>Semester</option>
-                                @foreach ($semester as $sem)
-                                    <option value="{{ $sem }}">{{ $sem }}</option>
-                                @endforeach
-                            </select>
-                        </p><br />
-
-
                         <div class="table-responsive">
                             <table class="table">
                                 <thead>
                                     <tr>
-                                        <th>Select</th>
+                                        <th>select</th>
+
                                         <th>Name</th>
-                                        <th>Code Name</th>
-                                        <th>Credit</th>
-                                        <th>Types</th>
+                                        <th>Year Level</th>
+                                        <th>Year</th>
+                                        <th>email</th>
 
                                     </tr>
                                 </thead>
                                 <tbody>
-
-
-                                    @foreach ($courses as $item)
+                                    @foreach ($users as $item)
                                         <tr>
-                                            <td>
-                                                <input class="form-check-input" style="margin:10px;" type="checkbox"
-                                                    name="courses[]" value="{{ $item->id }}"
-                                                    id="couses-{{ $item->id }}" />
+                                            <td><input class="form-check-input" style="margin:10px;" type="checkbox"
+                                                    name="students[]" value="{{ $item->id }}" />
                                                 <label class="form-check-label" id="">
                                                     <p></p>
                                                 </label>
                                             </td>
                                             <td>{{ $item->name }}</td>
-                                            <td>{{ $item->code_name }}</td>
-                                            <td>{{ $item->credit }}</td>
-                                            <td>
-                                                @foreach ($item->types as $type)
-                                                    {{ $type->name }}
-                                                @endforeach
-                                            </td>
+                                            <td>{{ $item->year_level }}</td>
+                                            <td>{{ $item->academicYear->year }}</td>
+                                            <td>{{ $item->email }}</td>
 
                                         </tr>
                                     @endforeach
-
                             </table>
                             <input type="submit" value="Save" class="btn btn-success"><br />
                     </form>
                 </div>
             </div>
         </div>
-    </div>
+    </div>\
 @endsection

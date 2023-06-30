@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 
+use App\Support\Searchable;
 use Attribute;
 use Illuminate\Auth\Events\Failed;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -14,7 +15,8 @@ use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable, Searchable;
+
 
     public const ROLE_ADMIN = 'admin';
     /**

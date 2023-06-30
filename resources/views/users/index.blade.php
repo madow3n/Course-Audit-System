@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 @section('content')
-    <div class="container">
+    <div class="container" style="width: 100%">
         <div class="row" style="margin:20px;">
             <div class="col-12">
                 <div class="card">
@@ -11,11 +11,23 @@
                         <a href="{{ url('/admin/users/create') }}" class="btn btn-success btn-sm" title="Add New Student">
                             Add New Students
                         </a> <br /><br />
-                        <form action="{{ url('/admin/users/promote') }}" method="POST">
-                            @csrf
-                            <button class="btn btn-success btn-sm" title="Add New Student">Promote Students</button>
-                        </form>
+                        <a href="{{ url('/admin/users/promote') }}" class="btn btn-success btn-sm">Promote Students</a>
                     </div>
+                    <form action='{{ url('/admin/users') }}'>
+                        <div class="input-group mb-3" style="padding-left: 10px; width: 50%;">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text" id="basic-addon1">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                        fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+                                        <path
+                                            d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z" />
+                                    </svg>
+                                </span>
+                            </div>
+                            <input type="search" name='search' class="form-control" placeholder="search...">
+                            <button type="submit" class="btn btn-light">Search</button>
+                        </div>
+                    </form>
                     <br />
                     <div class="table-responsive">
                         <table class="table">
